@@ -1,18 +1,18 @@
+#include <testlib.h>
+#include <WiFi.h>
 #include <GParser.h>
-
-#include <ESP8266WiFi.h>
 
 #define STASSID "Azamat"
 #define STAPSK  "R00000000"
 
 WiFiServer server(9090);
-
+Motor mymotor(27,26,25);
 const char* ssid     = STASSID;
 const char* password = STAPSK;
 
 
 void setup() {
-  Serial.begin(115200);
+  mymotor.begin();
 
   //WIFI settings
   Serial.println();
@@ -36,9 +36,9 @@ void setup() {
 
 }
 /*
-"0; 100; 100" -- for coords
+"0; 100; dir" -- for coords
 "1; 90" -- for incline
-"0" -- stop motors
+"2" -- stop motors
 
 */
 void loop() {
@@ -50,9 +50,8 @@ void loop() {
       while (client.available() > 0) {
         char str[150];
         //String line = client.readString();
-        int amount = client.readBytesUntil(',', str, 150);
-        str[amount] = NULL;
-
+        int amount = client.readBytes(str, 150);
+      
         int data[20]; //буфер интов
         int count = 0; //счётчик интов
         char* offset = str;
@@ -63,28 +62,11 @@ void loop() {
           else break;
         }
         switch(data[0]){
-          case 0: Serial.println(data[1]); break;
+          case 0: Serial.print("Task created ");Serial.println(data[1]); mymotor.go(data[2], data[1], data[3]); Serial.println(mymotor.getrps()); break;
+          case 10: Serial.println("RESET"); mymotor.reset(); break;
         }
         
       }
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

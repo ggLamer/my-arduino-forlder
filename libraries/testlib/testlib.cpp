@@ -13,18 +13,19 @@ void Motor::begin(){
     pinMode(_pul, OUTPUT);
     _workState = true;
 }
-void Motor::setspeed(int speed = 100){_speed = speed;}
+
 void Motor::stop(){_workState = false;}
-void Motor::go(byte direc, int rps ){
+void Motor::go(byte direc, float rps, int speed = 100){
     _direc = direc;
     _rps = rps;
+    _speed = speed;
 
     digitalWrite( _en, 0 );
     delayMicroseconds(5); 
     digitalWrite( _dir, _direc ); 
 
     delayMicroseconds(5);
-    for (int i = 0; i < _rps * 800; i++) { 
+    for (int i = 0; i < _rps * 6500; i++) { 
         if (!_workState){
             digitalWrite( _en, 1 );
             Serial.println("");
@@ -40,4 +41,4 @@ void Motor::go(byte direc, int rps ){
 }
 
 void Motor::reset(){gr = 0;}
-int Motor::getrps(){return gr / 800;}
+float Motor::getrps(){float r = gr / 6500; return r*101;}
