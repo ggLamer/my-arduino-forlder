@@ -12,20 +12,32 @@ void Motor::begin(){
     pinMode(_dir, OUTPUT);
     pinMode(_pul, OUTPUT);
     _workState = true;
+    digitalWrite( _en, 1 );
 }
 
 void Motor::stop(){_workState = false;}
-void Motor::go(byte direc, float rps, int speed = 100){
-    _direc = direc;
-    _rps = rps;
+void Motor::go(float x, int speed = 100){
+    
+    _x = x;
     _speed = speed;
+    if (_x > r){
+        dir = _x - r;
+        _direc = 0;
+        Serial.println(dir);
+    }
+    if(r > _x){
+        dir = r - _x;
+        _direc = 1;
+        Serial.println(dir);
+    }
 
     digitalWrite( _en, 0 );
     delayMicroseconds(5); 
     digitalWrite( _dir, _direc ); 
 
     delayMicroseconds(5);
-    for (int i = 0; i < _rps * 6500; i++) { 
+    
+    for (int i = 0; i < dir * 65; i++) { 
         if (!_workState){
             digitalWrite( _en, 1 );
             Serial.println("");
@@ -36,9 +48,13 @@ void Motor::go(byte direc, float rps, int speed = 100){
         delayMicroseconds(_speed); 
         digitalWrite( _pul, 0 ); 
         delayMicroseconds(_speed);
-        gr++;
+        if(_direc != 0){gr--;}
+        else{gr++;}
+        
     }
+    digitalWrite( _en, 1 );
+    r = gr / 65; 
 }
 
-void Motor::reset(){gr = 0;}
-float Motor::getrps(){float r = gr / 6500; return r*101;}
+void Motor::reset(){r = 0; gr = 0; digitalWrite( _en, 1 );}
+float Motor::getrps(){return r;}

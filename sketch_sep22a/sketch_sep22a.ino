@@ -62,8 +62,8 @@ void loop() {
           else break;
         }
         switch(data[0]){
-          case 0: Serial.print("Task created ");Serial.println(data[1]); mymotor.go(data[2], data[1], data[3]); Serial.println(mymotor.getrps()); break;
-          case 10: Serial.println("RESET"); mymotor.reset(); break;
+          case 0: Serial.print("Task created ");Serial.println(data[1]); mymotor.go(data[1], data[2]); Serial.println(mymotor.getrps()); client.print(mymotor.getrps()); break;
+          case 10: Serial.println("RESET"); mymotor.reset(); client.print(mymotor.getrps()); break;
         }
         
       }
